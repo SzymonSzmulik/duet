@@ -18,7 +18,7 @@ for f in "dist/Duet-$VERSION-mac-arm64.dmg" "dist/Duet-$VERSION-mac-x64.dmg" "di
 done
 [ ${#FILES[@]} -gt 0 ] || { echo "Nothing to publish: build into dist/ first (scripts/build-mac.sh, scripts/build-windows.bat)."; exit 1; }
 
-gh release create "$TAG" "${FILES[@]}" --repo "$REPO" --title "Duet $VERSION for computers" --notes "$NOTES" \
+gh release create "$TAG" "${FILES[@]}" --repo "$REPO" --title "Duet $VERSION" --notes "$NOTES" \
   || gh release upload "$TAG" "${FILES[@]}" --repo "$REPO" --clobber
 
 # The same files on the main repo's Releases page, where people look first. Best effort: the feeds above are what updates use.
@@ -29,7 +29,7 @@ APK="androidApp/build/outputs/apk/normal/release/androidApp-normal-release.apk"
 APKV="$(sed -n 's/^ *versionName = "\(.*\)"/\1/p' androidApp/build.gradle.kts | head -1)"
 [ -f "$APK" ] && cp "$APK" "dist/Duet-$APKV.apk"
 MFILES=($(printf '%s\n' "${FILES[@]}" "$(latest -windows.zip)" "$(latest -windows-setup.exe)" "$(latest -mac-arm64.dmg)" "$(latest -mac-x64.dmg)" "dist/Duet-$APKV.apk" | awk 'NF && !seen[$0]++ && system("test -f " $0)==0'))
-gh release create "$TAG" "${MFILES[@]}" --repo "$MIRROR" --title "Duet $VERSION for computers" --notes "$NOTES" \
+gh release create "$TAG" "${MFILES[@]}" --repo "$MIRROR" --title "Duet $VERSION" --notes "$NOTES" \
   || gh release upload "$TAG" "${MFILES[@]}" --repo "$MIRROR" --clobber || echo "Could not mirror to $MIRROR"
 
 feed() {  # platform, file
