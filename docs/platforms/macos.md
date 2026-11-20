@@ -1,0 +1,28 @@
+# macOS (Apple Silicon and Intel)
+
+Folder: `desktopApp/` (the same code as Windows) plus `shared/`. One app, "Duet", version `desktopVersion` in `desktopApp/build.gradle.kts` (now 1.0.0). The owner's MacBook is Apple Silicon and is the build machine for both Mac versions.
+
+## Where it is now (2026-11-20)
+- Works (tested on this Mac): YouTube Music search and playback, internet radio, Spotify search signed out and playing a Spotify song through YouTube Music's copy, the two-column style editor with the real desktop preview, the sidebar and player bar layout.
+- Sign-in (YouTube Music and Spotify): Google and Spotify refuse an embedded browser, so Duet opens the person's own Chrome, Edge or Brave on the login page (temporary profile), reads the session cookies over Chrome's local debugging connection, and closes it (`BrowserSignIn.kt`, D74). Tested: Chrome launches, Duet connects and reads cookies. NOT tested: a real login (needs the owner's accounts). With no such browser it falls back to a window of our own (often refused) with "Paste cookie instead".
+- Updates: the check and the Mac swap script work (tested with a real DMG) but need the public repo `duet-releases` (not created yet; waiting for the owner's yes).
+- **Lag fix (2026-11-20, D75):** Compose asks the window system for Caps, Num and Scroll Lock on EVERY mouse event; on a Mac each ask blocks the UI thread until the system main thread answers (and Num and Scroll Lock throw). With a trackpad that was hundreds of blocking calls a second: cut frames and delay while scrolling. `desktopApp/build.gradle.kts` (`patchComposeLockKeys`) rewrites Compose's two `getLockingKeyStateSafe` functions to return false and puts them in Duet's own jar (first on the class path); the build fails if Compose renames them. NOT yet confirmed by the owner's feel.
+  - Other findings: the GPU is used (Metal, 5 to 11% load); the display is 120 Hz but Duet draws at 60 fps (Skiko 0.9.4.2 under Compose 1.8.2; newer Skiko versions break it; a fix needs Compose 1.9.x); memory about 800 MB, about 350 MB of it WebKit (the hidden Spotify page); song start takes about 1.1 s in the player plus about 2 s for NewPipe. JavaFX cannot play a YouTube URL directly (`MEDIA_UNSUPPORTED`). Caching the ground effect as a bitmap made no difference (reverted). A JavaFX-contends-with-AWT hypothesis was tried with `DUET_NO_JAVAFX=1`: it was also slow, so it was wrong.
+  - Still to do: less memory (unload the Spotify page when idle, tune the JVM), prepare the next song while one plays, 120 Hz (Compose upgrade).
+- **Now Playing in macOS** (`MacNowPlaying.kt`, helper `src/macMain/swift/NowPlaying.swift`): Duet publishes its song (title, artist, album, cover, length, position, playing) to the system Now Playing, so Control Center, the media keys and notch or Dynamic-Island style apps show it and can pause, play, skip and seek it. The helper is built with `swiftc` during the Mac build (needs the Xcode command line tools on the build Mac; macOS 13 or newer; one program for Apple Silicon and Intel), shipped as a resource, copied to `~/.duet` at start (packaging drops the executable bit), and quits when Duet does. Tested: macOS reports the song while Duet plays, clears it when Duet quits, and pause, play and next sent from the system drive Duet (`nowplaying-cli`, installed with brew, reads the system's Now Playing). Not tested with a notch app (none installed).
+- **Player page (desktop):** the player bar is hidden while the full player or lyrics is open (it repeated the same controls), and the player's controls stay in a centred column up to 560 dp wide instead of spreading across the window.
+- **Retry (all platforms):** a song that fails to start is looked up again once before an error shows (YouTube sometimes says 403). Tested in `PlaybackAndSearchTest`.
+
+## Build, install, test
+- `./scripts/build-mac.sh` (Apple Silicon) or `./scripts/build-mac.sh x64` (Intel, runs under Rosetta). Output `dist/Duet-<version>-mac-arm64.dmg` and `-x64.dmg`. The script fetches Temurin 17 for the chip into `~/.jdks` (Homebrew's JDK cannot package).
+- Needs `swiftc` (Xcode command line tools) on the build Mac for the Now Playing helper.
+- Install on this Mac: copy `Duet.app` out of the DMG into `/Applications` (`cp -R`). A copy made on this Mac has no quarantine flag, so it opens normally. People who download the DMG may need `xattr -dr com.apple.quarantine /Applications/Duet.app` (unsigned app). The DMG's own "Could not install" message is harmless.
+- Test without installing: `./gradlew -PdesktopOnly :desktopApp:run`. Dev switches (environment variables): `DUET_SMOKE="song"` plays the first YouTube Music result; `DUET_SMOKE_SPOTIFY="song"` searches Spotify and plays the first result; `DUET_SMOKE_LOGIN=1` opens both sign-in windows; `DUET_SMOKE_BROWSER=1` tests the real-browser plumbing; `DUET_FRAMES=1` scrolls the window and prints frame times.
+- Unit tests: `./gradlew -PdesktopOnly :desktopApp:test` and `./gradlew :shared:desktopTest`.
+- The app keeps its files in `~/.duet` (cookies, the first-run marker).
+
+## Release
+GitHub, private for now: release `desktop-v1.0.0-test` in `SzymonSzmulik/duet` holds both DMGs. Public updates: `scripts/release-desktop.sh` (needs `duet-releases`). See [../DESKTOP.md](../DESKTOP.md) and [../RELEASING.md](../RELEASING.md).
+
+## Memory (2026-11-20)
+JVM capped (`-Xmx640m`, SerialGC, small free-heap ratios in `desktopApp/build.gradle.kts`). Measured after: ~930 MB RSS, of which ~250 MB is WebKit for the hidden Spotify page and ~93 MB Metal surfaces. Next saving would need the hidden page to start only when Spotify is used (needs a change to `SpotifyWebSession` in shared).

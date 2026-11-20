@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Duet Now Playing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div style="position:relative;width:390px;height:844px;overflow:hidden;background:linear-gradient(180deg,#3a3d2a 0%,#5a2a14 38%,#5a1a08 70%,#2a0c05 100%);color:#f1f2f7;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+<div style="position:relative;height:100%;padding:0 24px;display:flex;flex-direction:column">
+  <a href="Main.dc.html" aria-label="Close player" style="margin:52px auto 0 auto;width:48px;height:6px;border-radius:3px;background:rgba(255,255,255,.4);display:block"></a>
+  <div style="margin-top:36px;width:342px;height:342px;border-radius:14px;background:linear-gradient(135deg,#ff5a2c 0%,#7a1e0a 45%,#1a0a08 100%);box-shadow:0 20px 40px rgba(0,0,0,.35);position:relative;overflow:hidden">
+    <div style="position:absolute;right:30px;bottom:34px;width:150px;height:170px;border-radius:80px 80px 40px 40px;background:rgba(20,10,10,.55)"></div>
+  </div>
+
+  <div style="margin-top:28px;display:flex;align-items:flex-end;gap:12px">
+    <div style="flex:1;min-width:0">
+      <div style="font-size:24px;font-weight:800;line-height:1.15">Night Signal</div>
+      <div style="font-size:18px;font-weight:500;color:#f0d2c4;margin-top:2px">Halcyon Lines</div>
+    </div>
+    <button aria-label="Add to library" style="width:44px;height:44px;border-radius:22px;border:0;background:rgba(255,255,255,.16);color:#f1f2f7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.8 6.3.7-4.7 4.3 1.3 6.2L12 17l-5.6 3 1.3-6.2L3 9.5l6.3-.7z"/></svg></button>
+    <button aria-label="More options" style="width:44px;height:44px;border-radius:22px;border:0;background:rgba(255,255,255,.16);color:#f1f2f7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+  </div>
+  <div style="margin-top:10px;display:inline-flex;align-self:flex-start;align-items:center;gap:8px;padding:6px 12px;border-radius:16px;background:rgba(0,0,0,.28);font-size:13px;font-weight:600;color:#f6e6de"><span style="width:8px;height:8px;border-radius:4px;background:#ff6b6b"></span>YouTube Music · AAC</div>
+
+  <div style="margin-top:20px">
+    <div style="height:6px;border-radius:3px;background:rgba(255,255,255,.22)"><div style="width:35%;height:6px;border-radius:3px;background:{{accent}}"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;font-weight:600;color:#f0d2c4"><span>0:50</span><span>-1:32</span></div>
+  </div>
+
+  <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+    <button aria-label="Shuffle" style="width:44px;height:44px;border:0;background:none;color:#f0d2c4;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h3.5a5 5 0 0 1 4 2l3 4a5 5 0 0 0 4 2H21M3 18h3.5a5 5 0 0 0 4-2M14 8a5 5 0 0 1 3.5-2H21M18 3l3 3-3 3M18 15l3 3-3 3"/></svg></button>
+    <button aria-label="Previous" style="width:64px;height:56px;border:0;background:none;color:#f1f2f7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="2.6" height="14" rx="1"/><path d="M19 5.5v13a1 1 0 0 1-1.6.8l-9-6.5a1 1 0 0 1 0-1.6l9-6.5A1 1 0 0 1 19 5.5z"/></svg></button>
+    <button aria-label="Pause" style="width:96px;height:68px;border:0;border-radius:24px;background:{{accent}};color:#0e0f14;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg></button>
+    <button aria-label="Next" style="width:64px;height:56px;border:0;background:none;color:#f1f2f7;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="16.4" y="5" width="2.6" height="14" rx="1"/><path d="M5 5.5v13a1 1 0 0 0 1.6.8l9-6.5a1 1 0 0 0 0-1.6l-9-6.5A1 1 0 0 0 5 5.5z"/></svg></button>
+    <button aria-label="Repeat" style="width:44px;height:44px;border:0;background:none;color:#f0d2c4;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/></svg></button>
+  </div>
+
+  <div style="margin-top:14px;display:flex;align-items:center;gap:12px;color:#f0d2c4">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9z"/></svg>
+    <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.22)"><div style="width:42%;height:6px;border-radius:3px;background:#f1f2f7"></div></div>
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
+
+  <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-around">
+    <button aria-label="Lyrics" style="width:64px;height:48px;border:0;background:none;color:#f0d2c4;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2zM8 9h6M8 12h4"/></svg></button>
+    <button aria-label="Output device: Earbuds" style="width:150px;height:48px;border:0;border-radius:24px;background:rgba(255,255,255,.16);color:#f1f2f7;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg>Earbuds</button>
+    <button aria-label="Queue" style="width:64px;height:48px;border:0;background:none;color:#f0d2c4;display:flex;align-items:center;justify-content:center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h12M3 11h12M3 16h7M18 14v6M18 14l3-1"/><circle cx="16" cy="20" r="2"/></svg></button>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#c8f26b","options":["#c8f26b","#8f7bff","#ffb84d","#5ee0d0"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const G = '#3ecf7a', R = '#ff6b6b';
+    return {
+      accent: this.props.accent ?? '#c8f26b',
+
+    };
+  }
+}
+</script>
+</body>
+</html>

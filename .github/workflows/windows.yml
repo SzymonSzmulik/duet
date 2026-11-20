@@ -1,0 +1,26 @@
+# Builds the Windows version of Duet on a Windows machine at GitHub (a Mac cannot make a Windows .exe).
+# Run it from the repo's Actions tab ("Build Windows" > Run workflow); the files appear under the run's Artifacts.
+name: Build Windows
+on: workflow_dispatch
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      # -PdesktopOnly: no Android SDK needed. The installer .exe uses WiX 3, which GitHub's Windows machines already have.
+      - run: ./gradlew.bat -PdesktopOnly :desktopApp:createDistributable :desktopApp:packageExe
+        shell: cmd
+      # The zip the in-app updater downloads: a folder named Duet holding Duet.exe.
+      - run: |
+          $v = ((Select-String -Path desktopApp/build.gradle.kts -Pattern '^val desktopVersion = "(.*)"').Matches[0].Groups[1].Value)
+          Compress-Archive -Force -Path 'desktopApp\build\compose\binaries\main\app\Duet' -DestinationPath "Duet-$v-windows.zip"
+          Copy-Item (Get-ChildItem desktopApp\build\compose\binaries\main\exe\*.exe | Select-Object -First 1) "Duet-$v-windows-setup.exe"
+        shell: pwsh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Duet-windows
+          path: |
+            Duet-*-windows.zip
+            Duet-*-windows-setup.exe

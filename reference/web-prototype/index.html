@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duet — Spotify + YouTube Music client</title>
+<style>
+  :root{--bg:#0e0f13;--panel:#171922;--line:#262a38;--txt:#eceef5;--dim:#8b90a3;--sp:#1db954;--yt:#ff3d3d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 system-ui,sans-serif;padding-bottom:130px}
+  header{display:flex;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5;flex-wrap:wrap}
+  h1{font-size:18px;margin:0;flex:1}
+  button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit}
+  button:hover{border-color:var(--dim)}
+  input{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font:inherit;width:100%}
+  .search{display:flex;gap:8px;padding:14px 16px}
+  .chips{display:flex;gap:8px;padding:0 16px 8px}
+  .chip{padding:5px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--line);color:var(--dim)}
+  .chip.on{color:#fff;border-color:var(--dim);background:var(--panel)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  h2{font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 8px}
+  .row{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;cursor:pointer}
+  .row:hover,.row.now{background:var(--panel)}
+  .row img{width:44px;height:44px;border-radius:6px;object-fit:cover;background:var(--line)}
+  .meta{flex:1;min-width:0}
+  .meta b,.meta span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta span{color:var(--dim);font-size:13px}
+  .tag{font-size:11px;padding:2px 7px;border-radius:99px;color:#000;font-weight:600}
+  .tag.spotify{background:var(--sp)}.tag.youtube{background:var(--yt);color:#fff}
+  .add{padding:4px 9px}
+  #bar{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 16px;z-index:9}
+  #bar .top{display:flex;align-items:center;gap:12px}
+  #bar img{width:48px;height:48px;border-radius:6px;background:var(--line);object-fit:cover}
+  .ctrl{display:flex;gap:6px}
+  .seek{display:flex;gap:8px;align-items:center;margin-top:8px;color:var(--dim);font-size:12px}
+  input[type=range]{padding:0;accent-color:#fff;border:0;background:none}
+  .seek input{flex:1}
+  #yt{position:fixed;right:-9999px;width:200px;height:200px}
+  dialog{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:14px;max-width:520px;width:92%}
+  dialog::backdrop{background:#000a}
+  label{display:block;margin:12px 0 4px;color:var(--dim);font-size:13px}
+  small{color:var(--dim)}
+  .msg{padding:6px 16px;color:var(--dim);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎧 Duet</h1>
+  <button id="spBtn">Spotify: connect</button>
+  <button id="setBtn">Settings</button>
+</header>
+
+<form class="search" id="sf">
+  <input id="q" placeholder="Search songs, artists…" autocomplete="off">
+  <button>Search</button>
+</form>
+<div class="chips" id="chips">
+  <div class="chip on" data-s="both">Both</div>
+  <div class="chip" data-s="spotify">Spotify</div>
+  <div class="chip" data-s="youtube">YouTube</div>
+</div>
+<div class="chips" id="tabs">
+  <div class="chip on" data-t="search">Search</div>
+  <div class="chip" data-t="library">Spotify library</div>
+  <div class="chip" data-t="recap">Recap</div>
+</div>
+<div class="msg" id="msg"></div>
+<div id="libPane" style="display:none;padding:0 16px 8px">
+  <select id="lists" style="background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px;width:100%"></select>
+</div>
+<div id="recapPane" style="display:none;padding:0 16px 8px">
+  <div class="chips" style="padding:0 0 8px" id="ranges">
+    <div class="chip on" data-r="short_term">4 weeks</div><div class="chip" data-r="medium_term">6 months</div><div class="chip" data-r="long_term">All time</div>
+  </div>
+  <div id="recap"></div>
+</div>
+
+<div class="cols">
+  <section><h2>Results</h2><div id="results"></div></section>
+  <section><h2>Queue <button id="clr" class="add">clear</button></h2><div id="queue"></div></section>
+</div>
+
+<div id="bar">
+  <div class="top">
+    <img id="art" alt="">
+    <div class="meta"><b id="ttl">Nothing playing</b><span id="art2">Search and tap a track</span></div>
+    <div class="ctrl">
+      <button id="prev">⏮</button><button id="pp">▶</button><button id="next">⏭</button>
+    </div>
+    <input id="vol" type="range" min="0" max="100" value="70" style="width:80px">
+  </div>
+  <div class="seek"><span id="cur">0:00</span><input id="seek" type="range" min="0" max="1000" value="0"><span id="dur">0:00</span></div>
+</div>
+<div id="yt"></div>
+
+<dialog id="dlg">
+  <h3 style="margin-top:0">Settings</h3>
+  <label>Spotify Client ID <small>(developer.spotify.com → create app; Premium needed to play)</small></label>
+  <input id="spId" placeholder="Client ID">
+  <small>Add this exact Redirect URI to your Spotify app: <code id="ruri"></code></small>
+  <small>YouTube Music needs no key or login: the local server searches it for you.</small>
+  <p style="text-align:right"><button id="save">Save</button> <button id="close">Close</button></p>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s);
+const LS = {get:(k,d='')=>{try{return localStorage.getItem(k)??d}catch{return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}}};
+const REDIRECT = location.origin + location.pathname;
+const SCOPES = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state user-library-read playlist-read-private user-top-read';
+const fmt = s => { s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+const msg = t => $('#msg').textContent = t||'';
+const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let source='both', queue=[], idx=-1, playing=false, curSrc=null, dur=0, seeking=false;
+
+/* ---------- Settings ---------- */
+$('#ruri').textContent = REDIRECT;
+$('#spId').value = LS.get('sp_id');
+$('#setBtn').onclick = () => $('#dlg').showModal();
+$('#close').onclick = () => $('#dlg').close();
+$('#save').onclick = () => { LS.set('sp_id',$('#spId').value.trim()); $('#dlg').close(); msg('Saved.'); };
+$('#chips').onclick = e => { const c=e.target.closest('.chip'); if(!c) return; source=c.dataset.s;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c)); };
+
+/* ---------- Spotify auth (PKCE, no backend) ---------- */
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function spLogin(){
+  const id = LS.get('sp_id'); if(!id){ $('#dlg').showModal(); return; }
+  const v = b64(crypto.getRandomValues(new Uint8Array(48)));
+  LS.set('sp_verifier', v);
+  const ch = b64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)));
+  location.href = 'https://accounts.spotify.com/authorize?' + new URLSearchParams({
+    client_id:id, response_type:'code', redirect_uri:REDIRECT, scope:SCOPES, code_challenge_method:'S256', code_challenge:ch });
+}
+async function tokenReq(params){
+  const r = await fetch('https://accounts.spotify.com/api/token',{method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({client_id:LS.get('sp_id'),...params})});
+  const j = await r.json(); if(!j.access_token) throw new Error(j.error_description||'Spotify auth failed');
+  LS.set('sp_token',j.access_token); LS.set('sp_exp',Date.now()+j.expires_in*1000-30000);
+  if(j.refresh_token) LS.set('sp_refresh',j.refresh_token);
+}
+async function spToken(){
+  if(Date.now() < +LS.get('sp_exp',0)) return LS.get('sp_token');
+  if(!LS.get('sp_refresh')) return null;
+  await tokenReq({grant_type:'refresh_token',refresh_token:LS.get('sp_refresh')});
+  return LS.get('sp_token');
+}
+async function spApi(path,opt={}){
+  const t = await spToken(); if(!t) throw new Error('Connect Spotify first');
+  const r = await fetch('https://api.spotify.com/v1'+path,{...opt,headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'}});
+  if(r.status===204) return null;
+  const j = await r.json().catch(()=>null);
+  if(!r.ok) throw new Error(j?.error?.message||('Spotify '+r.status));
+  return j;
+}
+$('#spBtn').onclick = spLogin;
+
+(async function handleRedirect(){
+  const code = new URLSearchParams(location.search).get('code');
+  if(code){
+    try{ await tokenReq({grant_type:'authorization_code',code,redirect_uri:REDIRECT,code_verifier:LS.get('sp_verifier')}); }
+    catch(e){ msg(e.message); }
+    history.replaceState({},'',REDIRECT);
+  }
+  if(LS.get('sp_refresh')) initSpotifyPlayer();
+})();
+
+/* ---------- Spotify player (Web Playback SDK) ---------- */
+let spPlayer=null, spDevice=null;
+function initSpotifyPlayer(){
+  $('#spBtn').textContent='Spotify: connected ✓';
+  const s=document.createElement('script'); s.src='https://sdk.scdn.co/spotify-player.js'; document.head.appendChild(s);
+  window.onSpotifyWebPlaybackSDKReady = () => {
+    spPlayer = new Spotify.Player({name:'Duet',getOAuthToken:async cb=>cb(await spToken()),volume:$('#vol').value/100});
+    spPlayer.addListener('ready',({device_id})=>{spDevice=device_id;});
+    spPlayer.addListener('account_error',()=>msg('Spotify playback needs a Premium account.'));
+    spPlayer.addListener('authentication_error',e=>msg(e.message));
+    spPlayer.addListener('player_state_changed',st=>{
+      if(!st||curSrc!=='spotify') return;
+      playing=!st.paused; dur=st.duration/1000; syncUI(st.position/1000);
+      // track finished: paused at 0 with the same track now in previous_tracks
+      const prev=st.track_window.previous_tracks.some(t=>t.id===st.track_window.current_track.id);
+      if(st.paused && st.position===0 && prev) next();
+    });
+    spPlayer.connect();
+  };
+}
+
+/* ---------- YouTube player (IFrame API) ---------- */
+let ytPlayer=null, ytReady=false;
+const ytTag=document.createElement('script'); ytTag.src='https://www.youtube.com/iframe_api'; document.head.appendChild(ytTag);
+window.onYouTubeIframeAPIReady = () => {
+  ytPlayer = new YT.Player('yt',{height:'200',width:'200',playerVars:{playsinline:1,controls:0,origin:location.origin},events:{
+    onReady:()=>{ytReady=true; ytPlayer.setVolume($('#vol').value);},
+    onStateChange:e=>{
+      if(curSrc!=='youtube') return;
+      if(e.data===YT.PlayerState.ENDED) next();
+      if(e.data===YT.PlayerState.PLAYING){playing=true;dur=ytPlayer.getDuration();syncUI();}
+      if(e.data===YT.PlayerState.PAUSED){playing=false;syncUI();}
+    }}});
+};
+
+/* ---------- Search ---------- */
+async function searchSpotify(q){
+  const j = await spApi('/search?type=track&limit=12&q='+encodeURIComponent(q));
+  return j.tracks.items.map(t=>({src:'spotify',id:t.id,uri:t.uri,title:t.name,artist:t.artists.map(a=>a.name).join(', '),
+    art:(t.album.images[2]||t.album.images[0]||{}).url,dur:t.duration_ms/1000}));
+}
+async function searchYouTube(q){
+  const r=await fetch('/api/yt/search?q='+encodeURIComponent(q));
+  const j=await r.json(); if(j.error) throw new Error('YouTube Music: '+j.error);
+  return j;
+}
+$('#sf').onsubmit = async e => {
+  e.preventDefault(); const q=$('#q').value.trim(); if(!q) return; msg('Searching…');
+  const jobs=[]; if(source!=='youtube') jobs.push(searchSpotify(q)); if(source!=='spotify') jobs.push(searchYouTube(q));
+  const res=await Promise.allSettled(jobs); const out=[]; const errs=[];
+  res.forEach(r=>r.status==='fulfilled'?out.push(r.value):errs.push(r.reason.message));
+  // interleave sources
+  const merged=[]; for(let i=0;i<12;i++) out.forEach(l=>l[i]&&merged.push(l[i]));
+  renderList('#results',merged,true); msg(errs.join(' · '));
+};
+
+/* ---------- Rendering ---------- */
+let lastResults=[];
+function rowHTML(t,i,isRes){
+  return `<div class="row ${!isRes&&i===idx?'now':''}" data-i="${i}">
+    <img src="${esc(t.art)}" alt=""><div class="meta"><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></div>
+    <span class="tag ${t.src}">${t.src==='spotify'?'Spotify':'YT'}</span>
+    ${isRes?'<button class="add" data-add="'+i+'">＋</button>':''}</div>`;
+}
+function renderList(sel,list,isRes){
+  if(isRes) lastResults=list;
+  $(sel).innerHTML = list.map((t,i)=>rowHTML(t,i,isRes)).join('') || '<small>Nothing here yet.</small>';
+}
+$('#results').onclick = e => {
+  const a=e.target.closest('[data-add]'); const r=e.target.closest('.row'); if(!r) return;
+  const t=lastResults[+r.dataset.i];
+  if(a){ queue.push(t); renderList('#queue',queue); return; }
+  queue.push(t); renderList('#queue',queue); play(queue.length-1);
+};
+$('#queue').onclick = e => { const r=e.target.closest('.row'); if(r) play(+r.dataset.i); };
+$('#clr').onclick = () => { queue=[]; idx=-1; renderList('#queue',queue); };
+
+/* ---------- Playback control ---------- */
+async function play(i){
+  const t=queue[i]; if(!t) return; idx=i; renderList('#queue',queue);
+  $('#ttl').textContent=t.title; $('#art2').textContent=t.artist; $('#art').src=t.art||'';
+  try{
+    if(t.src==='spotify'){
+      if(!spDevice) throw new Error('Spotify player not ready (connect + Premium required)');
+      if(curSrc==='youtube'&&ytReady) ytPlayer.pauseVideo();
+      curSrc='spotify'; dur=t.dur;
+      await spApi('/me/player/play?device_id='+spDevice,{method:'PUT',body:JSON.stringify({uris:[t.uri]})});
+    } else {
+      if(!ytReady) throw new Error('YouTube player still loading');
+      if(curSrc==='spotify'&&spPlayer) spPlayer.pause();
+      curSrc='youtube'; ytPlayer.loadVideoById(t.id);
+    }
+    playing=true; syncUI(0); msg('');
+  }catch(e){ msg(e.message); }
+}
+function toggle(){
+  if(curSrc==='spotify') spPlayer.togglePlay();
+  else if(curSrc==='youtube') playing?ytPlayer.pauseVideo():ytPlayer.playVideo();
+}
+function next(){ if(idx<queue.length-1) play(idx+1); else {playing=false;syncUI();} }
+function prev(){ if(idx>0) play(idx-1); }
+$('#pp').onclick=toggle; $('#next').onclick=next; $('#prev').onclick=prev;
+$('#vol').oninput=e=>{ const v=+e.target.value; if(spPlayer) spPlayer.setVolume(v/100); if(ytReady) ytPlayer.setVolume(v); };
+$('#seek').oninput=()=>{seeking=true;};
+$('#seek').onchange=e=>{ const s=dur*e.target.value/1000;
+  if(curSrc==='spotify') spPlayer.seek(s*1000); else if(curSrc==='youtube') ytPlayer.seekTo(s,true); seeking=false; };
+
+function syncUI(pos){
+  $('#pp').textContent = playing?'⏸':'▶'; $('#dur').textContent=fmt(dur);
+  if(pos!==undefined){ $('#cur').textContent=fmt(pos); $('#seek').value=dur?pos/dur*1000:0; }
+}
+// poll position
+setInterval(async()=>{
+  if(!playing||seeking||!dur) return; let pos=null;
+  if(curSrc==='youtube'&&ytReady) pos=ytPlayer.getCurrentTime();
+  else if(curSrc==='spotify'&&spPlayer){ const st=await spPlayer.getCurrentState(); if(st) pos=st.position/1000; }
+  if(pos!==null) syncUI(pos);
+},500);
+
+/* ---------- Spotify library + recap ---------- */
+const mapSp = t => ({src:'spotify',id:t.id,uri:t.uri,title:t.name,artist:t.artists.map(a=>a.name).join(', '),
+  art:(t.album?.images?.[2]||t.album?.images?.[0]||{}).url,dur:t.duration_ms/1000});
+let tab='search';
+$('#tabs').onclick = e => { const c=e.target.closest('.chip'); if(!c) return; tab=c.dataset.t;
+  document.querySelectorAll('#tabs .chip').forEach(x=>x.classList.toggle('on',x===c));
+  $('#sf').style.display=$('#chips').style.display = tab==='search'?'':'none';
+  $('#libPane').style.display = tab==='library'?'':'none';
+  $('#recapPane').style.display = tab==='recap'?'':'none';
+  if(tab==='library') loadLists(); if(tab==='recap') loadRecap(); };
+async function loadLists(){
+  try{
+    const pl = await spApi('/me/playlists?limit=50');
+    $('#lists').innerHTML = '<option value="liked">❤ Liked Songs</option>' + pl.items.filter(Boolean).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+    openList();
+  }catch(e){ msg(e.message); }
+}
+async function openList(){
+  const v=$('#lists').value; msg('Loading…');
+  try{
+    const j = v==='liked' ? await spApi('/me/tracks?limit=50') : await spApi(`/playlists/${v}/tracks?limit=50`);
+    const tr = j.items.map(i=>i.track||i).filter(t=>t&&t.id).map(mapSp);
+    renderList('#results',tr,true); msg('');
+  }catch(e){ msg(e.message); }
+}
+$('#lists').onchange = openList;
+let range='short_term';
+$('#ranges').onclick = e => { const c=e.target.closest('.chip'); if(!c) return; range=c.dataset.r;
+  document.querySelectorAll('#ranges .chip').forEach(x=>x.classList.toggle('on',x===c)); loadRecap(); };
+async function loadRecap(){
+  try{
+    msg('Loading…');
+    const [tt,ta] = await Promise.all([spApi('/me/top/tracks?limit=20&time_range='+range), spApi('/me/top/artists?limit=10&time_range='+range)]);
+    const genres={}; ta.items.forEach(a=>a.genres.forEach(g=>genres[g]=(genres[g]||0)+1));
+    const top=Object.entries(genres).sort((a,b)=>b[1]-a[1]).slice(0,5).map(g=>g[0]).join(', ');
+    $('#recap').innerHTML = `<h2>Top artists</h2><div>${ta.items.map((a,i)=>`${i+1}. ${esc(a.name)}`).join(' · ')}</div>
+      <h2>Top genres</h2><div>${esc(top)||'—'}</div><h2>Top tracks (tap to play)</h2>`;
+    renderList('#results',tt.items.map(mapSp),true); msg('');
+  }catch(e){ msg(e.message); }
+}
+
+// media keys
+if('mediaSession' in navigator){
+  navigator.mediaSession.setActionHandler('nexttrack',next);
+  navigator.mediaSession.setActionHandler('previoustrack',prev);
+}
+</script>
+</body>
+</html>

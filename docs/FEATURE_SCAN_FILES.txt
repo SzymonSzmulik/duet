@@ -1,0 +1,47 @@
+# Files in the prior-art apps that mention lossless/FLAC, Dolby/AC-4/E-AC3/Atmos, spatializer, loudness normalisation, SponsorBlock, Last.fm/scrobbling, gapless or ad blocking
+# Generated 2026-11-17 by grep over ~/prior-art (Metrolist bc6c185, SpatialFlow ab6336c, Orpheon/myspoti 70f323c). Paths are relative to each repo.
+== Metrolist
+shared/src/iosMain/kotlin/com/metrolist/shared/MetrolistPlatform.kt
+shared/src/iosMain/kotlin/com/metrolist/shared/youtube/playback/IosPageBoundTokenRuntime.kt
+shared/src/iosMain/kotlin/com/metrolist/shared/playback/MusicPlayer.kt
+shared/src/iosMain/kotlin/com/metrolist/shared/playback/IosPlaybackController.kt
+shared/src/desktopTest/kotlin/meow/nyx/spotlib/SpotifyClientRateLimitTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/ui/components/lyrics/LyricsContrastScrimTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/settings/CredentialPersistenceTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/settings/LinuxCredentialRecoveryTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/settings/LinuxSecretServiceProbe.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/settings/LinuxCredentialSelectionTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/scrobble/PendingScrobbleStoreTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/viewmodels/PlayerLyricsRetryTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/playlistimport/UniversalPlaylistParserTest.kt
+shared/src/desktopTest/kotlin/com/metrolist/shared/playlistimport/PlaylistImportManagerTest.kt
+== SpatialFlow
+app/src/main/java/org/akanework/gramophone/logic/utils/SemanticLyrics.kt
+app/src/main/java/com/codetrio/spatialflow/MainActivity.kt
+app/src/main/java/com/codetrio/spatialflow/ui/SettingsFragment.kt
+app/src/main/java/com/codetrio/spatialflow/viewmodel/PlayerSharedViewModel.kt
+app/src/main/java/com/codetrio/spatialflow/ui/theme/Color.kt
+app/src/main/java/com/codetrio/spatialflow/ui/player/WavyMusicSlider.kt
+app/src/main/java/com/codetrio/spatialflow/ui/player/FullPlayer.kt
+app/src/main/java/com/codetrio/spatialflow/ui/theme/Theme.kt
+app/src/main/java/com/codetrio/spatialflow/data/lyrics/LyricsNormalizer.kt
+app/src/main/java/com/codetrio/spatialflow/util/PlayerHapticManager.kt
+app/src/main/java/com/codetrio/spatialflow/util/SongDownloader.kt
+app/src/main/java/com/codetrio/spatialflow/service/AudioPlaybackService.kt
+app/src/main/java/com/codetrio/spatialflow/data/lyrics/ConfidenceScorer.kt
+app/src/main/java/com/codetrio/spatialflow/data/lyrics/LrcParser.kt
+== myspoti
+base/extensions-cli/src/main/kotlin/app/myspoti/extensions/cli/Scenario.kt
+base/app/src/androidTest/java/com/music/spotui/data/offline/AacTranscoderTest.kt
+base/app/src/androidTest/java/com/music/spotui/data/offline/OfflineCryptoTest.kt
+base/app/src/main/java/com/music/spotui/App.kt
+base/app/src/main/java/com/music/spotui/ui/tv/TvNowPlaying.kt
+base/app/src/main/java/com/music/spotui/ui/screens/SponsorBlockSettings.kt
+base/app/src/main/java/com/music/spotui/ui/screens/ContextScreen.kt
+base/app/src/main/java/com/music/spotui/ui/screens/ArtistScreen.kt
+base/app/src/main/java/com/music/spotui/ui/screens/SettingsScreen.kt
+base/app/src/main/java/com/music/spotui/ui/screens/PlayerScreen.kt
+base/app/src/main/java/com/music/spotui/ui/components/WhySourceSheet.kt
+base/app/src/main/java/com/music/spotui/ui/screens/LyricsScreen.kt
+base/app/src/main/java/com/music/spotui/ui/components/PlayerSheets.kt
+base/app/src/main/java/com/music/spotui/ui/components/BlendPanel.kt
