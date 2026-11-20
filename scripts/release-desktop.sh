@@ -23,8 +23,14 @@ gh release create "$TAG" "${FILES[@]}" --repo "$REPO" --title "Duet $VERSION for
 
 # The same files on the main repo's Releases page, where people look first. Best effort: the feeds above are what updates use.
 MIRROR="${DUET_MIRROR_REPO:-SzymonSzmulik/duet}"
-gh release create "$TAG" "${FILES[@]}" --repo "$MIRROR" --title "Duet $VERSION for computers" --notes "$NOTES" \
-  || gh release upload "$TAG" "${FILES[@]}" --repo "$MIRROR" --clobber || echo "Could not mirror to $MIRROR"
+# Each release page carries the newest build of every system (a Windows build is not rebuilt when only the Mac is), the Windows installer and the newest phone APK.
+latest() { ls dist/Duet-*"$1" 2>/dev/null | sort -V | tail -1; }
+APK="androidApp/build/outputs/apk/normal/release/androidApp-normal-release.apk"
+APKV="$(sed -n 's/^ *versionName = "\(.*\)"/\1/p' androidApp/build.gradle.kts | head -1)"
+[ -f "$APK" ] && cp "$APK" "dist/Duet-$APKV.apk"
+MFILES=($(printf '%s\n' "${FILES[@]}" "$(latest -windows.zip)" "$(latest -windows-setup.exe)" "$(latest -mac-arm64.dmg)" "$(latest -mac-x64.dmg)" "dist/Duet-$APKV.apk" | awk 'NF && !seen[$0]++ && system("test -f " $0)==0'))
+gh release create "$TAG" "${MFILES[@]}" --repo "$MIRROR" --title "Duet $VERSION for computers" --notes "$NOTES" \
+  || gh release upload "$TAG" "${MFILES[@]}" --repo "$MIRROR" --clobber || echo "Could not mirror to $MIRROR"
 
 feed() {  # platform, file
   local json sha
