@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # "Update windows" / "update mac": bump the version, build, publish, and move the update feed so installed apps update themselves.
 #   ./scripts/update-desktop.sh windows "What's new"     (the Windows build runs at GitHub; needs `gh` signed in with the workflow scope)
-#   ./scripts/update-desktop.sh mac "What's new"         (builds the Apple Silicon DMG on this Mac)
+#   ./scripts/update-desktop.sh mac "What's new"         (builds the Apple Silicon and Intel DMGs on this Mac)
+#   ./scripts/update-desktop.sh all "What's new"         (both: every file carries the same version)
 # Installed copies check the feed when they start and install the new version by themselves. See docs/DESKTOP.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -17,20 +18,22 @@ sed -i.bak "s/const val VERSION_CODE = [0-9]*/const val VERSION_CODE = $CODE/" d
 git add -A && git commit -q -m "Desktop $VERSION: $NOTES" && git push -q origin main
 mkdir -p dist
 
+windows_build() {
+  gh workflow run windows.yml
+  sleep 10
+  RUN=$(gh run list --workflow=windows.yml --limit 1 --json databaseId -q '.[0].databaseId')
+  gh run watch "$RUN" --exit-status >/dev/null
+  TMP=$(mktemp -d)
+  gh run download "$RUN" -D "$TMP"
+  cp "$TMP"/Duet-windows/Duet-"$VERSION"-windows.zip "$TMP"/Duet-windows/Duet-"$VERSION"-windows-setup.exe dist/
+}
+mac_build() { ./scripts/build-mac.sh arm64; ./scripts/build-mac.sh x64; }
+
 case "$WHAT" in
-  windows)
-    gh workflow run windows.yml
-    sleep 10
-    RUN=$(gh run list --workflow=windows.yml --limit 1 --json databaseId -q '.[0].databaseId')
-    gh run watch "$RUN" --exit-status >/dev/null
-    TMP=$(mktemp -d)
-    gh run download "$RUN" -D "$TMP"
-    cp "$TMP"/Duet-windows/Duet-"$VERSION"-windows.zip "$TMP"/Duet-windows/Duet-"$VERSION"-windows-setup.exe dist/
-    ;;
-  mac)
-    ./scripts/build-mac.sh arm64
-    ;;
-  *) echo "windows or mac"; exit 1 ;;
+  windows) windows_build ;;
+  mac) mac_build ;;
+  all) windows_build; mac_build ;;   # one version for every system, so the release page matches
+  *) echo "windows, mac or all"; exit 1 ;;
 esac
 ./scripts/release-desktop.sh "$NOTES"
 echo "Published Duet $VERSION ($WHAT). Installed copies update the next time they start."
