@@ -87,3 +87,7 @@ More: [docs/DESKTOP.md](docs/DESKTOP.md) (the computer apps), [docs/SPEC.md](doc
 Duet is free software under the [GNU GPL v3](LICENSE). YouTube streams come from [NewPipe Extractor](https://github.com/TeamNewPipe/NewPipeExtractor) (GPL-3.0). Parts come from [SpatialFlow](https://github.com/MythicalSHUB/SpatialFlow) (Apache-2.0), and Spotify playback follows the approach of [Myspoti](https://github.com/kota-zo/myspoti). The full list is in [docs/THIRD_PARTY.md](docs/THIRD_PARTY.md).
 
 Duet is not made by, or endorsed by, Spotify or YouTube. YouTube Music is reached through unofficial endpoints that can change without notice.
+
+---
+
+It was vibecoded lol.
