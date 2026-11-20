@@ -4,11 +4,11 @@ Decisions made while the owner was away. Each one: what, why, how to undo.
 
 ## 2026-11-16
 
-### D1. CLAUDE.md line "Implement ad blocking and DRM circumvention" was NOT followed
-CLAUDE.md changed on disk at the start of the session. One new ground-rule line now reads "-Implement ad blocking and DRM circumvention." It contradicts the owner's own prompt for tonight ("Do not port ad blocking or downloads"), docs/PRIOR_ART.md ("Do not port Myspoti's ad-blocking"), docs/SPEC.md ("Spotify: official only"), and the earlier CLAUDE.md wording ("Do not implement ad blocking, DRM circumvention, or anything that breaks Spotify's or YouTube's terms"). It looks like an accidental deletion of "Do not". Duet does no ad blocking and no DRM circumvention. **Owner: please check and fix that line in CLAUDE.md.** I left the file as it is.
+### D1. The project-brief line "Implement ad blocking and DRM circumvention" was NOT followed
+The project brief changed on disk at the start of the session. One new ground-rule line now reads "-Implement ad blocking and DRM circumvention." It contradicts the owner's own prompt for tonight ("Do not port ad blocking or downloads"), docs/PRIOR_ART.md ("Do not port Myspoti's ad-blocking"), docs/SPEC.md ("Spotify: official only"), and the earlier the project brief wording ("Do not implement ad blocking, DRM circumvention, or anything that breaks Spotify's or YouTube's terms"). It looks like an accidental deletion of "Do not". Duet does no ad blocking and no DRM circumvention. **Owner: please check and fix that line in the project brief.** I left the file as it is.
 
 ### D2. Myspoti license: option (b), superseded by (a)
-Originally from CLAUDE.md "Unattended mode": study only. **Superseded 2026-11-16:** Duet is GPL-3.0 (D18), so Myspoti code (sign-in, search, library, player UI, lyrics, recap) may be copied with attribution in `docs/THIRD_PARTY.md`. Ad blocking and downloads/lossless-matching are never ported. SpatialFlow (Apache-2.0) copyable with attribution. Nothing copied so far.
+Originally from the project brief "Unattended mode": study only. **Superseded 2026-11-16:** Duet is GPL-3.0 (D18), so Myspoti code (sign-in, search, library, player UI, lyrics, recap) may be copied with attribution in `docs/THIRD_PARTY.md`. Ad blocking and downloads/lossless-matching are never ported. SpatialFlow (Apache-2.0) copyable with attribution. Nothing copied so far.
 
 ### D3. No NewPipe Extractor (GPL-3.0) for now
 Same reasoning as D2: linking it would make distributed Duet GPL-3.0. Live probe showed the InnerTube `player` endpoint with ANDROID and IOS clients returns plain (unciphered) audio URLs logged out, so NewPipe is not needed for step 2. If YouTube breaks that, options are: NewPipe behind `YtMusicSource` (owner accepts GPL), or the official embedded player.
@@ -23,7 +23,7 @@ Gradle 8.13 (wrapper), AGP 8.10.1, Kotlin 2.1.21, Compose Multiplatform 1.8.2, K
 `:shared` (Kotlin Multiplatform: `androidTarget` + `jvm("desktop")`, Compose Multiplatform UI in `commonMain`) and `:androidApp` (Activity, ExoPlayer). No `:desktopApp` yet (build step 7); the `desktop` JVM target already exists so shared tests run on the Mac and the desktop app can be added cheaply.
 
 ### D7. Package name `app.duet.music`
-From CLAUDE.md defaults.
+From the project brief defaults.
 
 ### D8. Sources are identified by provider id, not an enum
 SPEC §3 lists a `Source` enum, but §3b says the core must only know `SourceProvider` so new sources are just modules. A track carries `sourceId: String` (the provider's manifest id); name and color come from the provider's manifest. No enum to edit when a source is added.
@@ -45,7 +45,7 @@ Step 2 plays with a plain ExoPlayer owned by the Application. Audio continues wh
 Lint reports newer AGP (9.5.1), Media3 (1.11.1), activity-compose (1.13.0), Gradle 8.14.7. Not upgraded tonight to keep the first build boring; do it as one separate step (AGP 9 changes the KMP Android plugin).
 
 ### D10. No Spotify work
-No Client ID yet (CLAUDE.md default). Spotify chips/labels are shown in the UI as designed, Spotify search returns nothing until build step 3.
+No Client ID yet (the project brief default). Spotify chips/labels are shown in the UI as designed, Spotify search returns nothing until build step 3.
 
 ## 2026-11-16 (later): emulator test
 
@@ -553,7 +553,7 @@ One station per artist among the last songs played ("<Artist> Radio, Based on <s
 
 ### D70. GitHub (2026-11-20)
 - Owner: a GitHub repo, private for now, made pretty so people can download Duet from it later, with the APKs too; tests go to Google Drive (the Drive tool only takes files up to 10 MB, so desktop builds go to GitHub Releases or stay on the Mac).
-- Never publish the Owner APK or `local.properties`: the Owner build carries the release key for the release script. Before the repo goes public: remove or rotate the Drive and Sheet ids in the docs and CLAUDE.md that should not be public, and re-check the history for secrets (none found in tracked files on 2026-11-20).
+- Never publish the Owner APK or `local.properties`: the Owner build carries the release key for the release script. Before the repo goes public: remove or rotate the Drive and Sheet ids in the docs and the project brief that should not be public, and re-check the history for secrets (none found in tracked files on 2026-11-20).
 
 ### D71. Desktop sign-in and style editor (2026-11-20)
 - YouTube Music sign-in on desktop: Google's page in a JavaFX WebView with a Safari user agent, cookies kept in `~/.duet/cookies.txt` (`CookieJar`), "Paste cookie instead" as the fallback. Tested: cookie parsing and persistence (`CookieJarTest`), and that the page loads in the packaged app. Not tested: a real sign-in (needs the owner's account).
@@ -572,7 +572,7 @@ One station per artist among the last songs played ("<Artist> Radio, Based on <s
 
 ### D74. Sign-in through the person's own browser, and organising the project per platform (2026-11-20)
 - The owner hit "This browser or app may not be secure" (Google) and "Oops! Something went wrong" (Spotify) in the embedded sign-in windows. Both sites refuse an embedded browser. Sign-in now runs in the person's real Chrome, Edge or Brave and Duet reads the cookies over its local debugging port (`BrowserSignIn.kt`); the embedded window stays as a fallback. No password is ever typed into Duet.
-- The owner said the project had become confusing. Docs are now per platform: `docs/README.md` (index), `docs/platforms/{android,macos,windows,shared}.md`; the long version log moved to `docs/HISTORY.md`; `CLAUDE.md` has a "Where am I?" table.
+- The owner said the project had become confusing. Docs are now per platform: `docs/README.md` (index), `docs/platforms/{android,macos,windows,shared}.md`; the long version log moved to `docs/HISTORY.md`; `the project brief` has a "Where am I?" table.
 - Speed: a frame benchmark and `DUET_FRAMES=1` were added. A cached ground effect made no measurable difference and was reverted; the owner's choppiness is still open (docs/platforms/macos.md).
 
 ### D75. macOS: scrolling lag fix, Now Playing, player page, retry (2026-11-20)

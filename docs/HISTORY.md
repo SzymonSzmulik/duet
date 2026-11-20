@@ -2,14 +2,14 @@
 
 Newest entries are at the bottom. For where things are NOW, see docs/README.md and docs/platforms/.
 
-## Current state (updated 2026-11-16 by Claude Code)
+## Current state (updated 2026-11-16)
 - Done: build steps 1, 2, 4, most of 6 (background playback, media notification, lock-screen/headset controls; D23) (step 3 Spotify: sign-in, search, Web Player playback done Myspoti way, D24/D28; playback untested without account). YouTube Music has same optional Google sign-in (D25). Also: lyrics (LRCLIB), more settings, Android Auto browse tree, offline downloads for YouTube Music (D27). Also: Accounts sheet (avatar), Settings (gear), per-source pages, YT Music data saver.
 - Verified on emulator AVD `duet` (start: `/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd duet`).
 - YouTube streams from NewPipe Extractor v0.27.1, so **Duet is GPL-3.0** (owner's choice; Myspoti now option (a)). Plain InnerTube player URLs 403 after ~1-2 MB (PoToken).
 - Env: JDK is Homebrew `openjdk@17` (keg-only). Until owner adds exports from docs/SETUP_LOG.md to ~/.zshrc, prefix Gradle with
   `JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home ANDROID_HOME=/opt/homebrew/share/android-commandlinetools`.
 - Tests: `./gradlew :shared:desktopTest` (screenshots in shared/build/screenshots); live YT check with `DUET_LIVE=1`.
-- Open items: CLAUDE.md "Implement ad blocking" line looks like missing "Do not" (not followed, see docs/DECISIONS.md D1); hardware-keyboard Enter doesn't submit search (owner said leave it); next: verify Spotify playback signed in, Spotify media notification, 5 (Library/Home shelves), rest of 6 (Bluetooth device name in UI, polish).
+- Open items: a project-brief line about ad blocking looked like a missing "Do not" (not followed, see docs/DECISIONS.md D1); hardware-keyboard Enter doesn't submit search (owner said leave it); next: verify Spotify playback signed in, Spotify media notification, 5 (Library/Home shelves), rest of 6 (Bluetooth device name in UI, polish).
 - Later, only when owner says so (after Android app perfected): iOS IPA for sideloading, macOS DMG, Windows EXE. Assessment 2026-11-16: DMG/EXE doable from KMP desktop target; IPA big job, Spotify playback likely impossible on iOS (no Widevine in WKWebView).
 - v0.13.0: in-app updates + three apps (Duet / Duet Tester / Duet Owner). Release steps in docs/RELEASING.md (D42). Release script deployed 2026-11-17.
 - v0.13.2 (2026-11-17): release key signing, Settings menu, sound/sleep fixes. Spotify playback still broken; reverb refused by Android. Read docs/HANDOFF-2026-11-17.md first. Owner wants ad blocking and Spotify downloads via YT Music (D43). Always build/install Owner first.
@@ -24,7 +24,7 @@ Newest entries are at the bottom. For where things are NOW, see docs/README.md a
 - v0.18.2 (2026-11-19): delete playlists (Duet: Edit > Delete playlist; Spotify/YT Music: long press in Library or Edit on page), remove albums/artists from Library (D59).
 - v0.19.0 (2026-11-19): new default look Marquee (D60): poster capitals, song-colour ground, full-screen cover player. Mockups in design/redesign-2026-11-19 (Drive folder "Duet redesign 2026-11-19"). Owner installed on phone; feed at 0.18.1.
 - v0.20.0 (2026-11-19): Marquee only look, tighter corners, quiet buttons/chips, service marks, greeting headline (D61); player sleep timer, save/clear queue, Android Auto liked songs + playlists + Like/Shuffle buttons, media3 1.10.1 crash fix (D62).
-- 2026-11-19: owner dislikes every look so far (incl. 0.20). Next look comes from Duet Look Studio page https://claude.ai/artifact/1WMRiyxAQScY9i8eTGnhqv (source design/look-studio/duet-looks.html; shared by link). Owner and friends save looks to its db collection `looks` (one doc per person) or send DUETLOOK summary; read them with ArtifactData, then build chosen look.
+- 2026-11-19: owner dislikes every look so far (incl. 0.20). The next look comes from the Look Studio page.
 - v0.21.0 (2026-11-19): owner's Look Studio look replaces Marquee (D63): Instrument Sans, song-colour glow ground, blurred-cover player. Drive: all Duet files under one folder "Duet" (APKs per app; Owner APKs private, Owner updater opens private links in browser). See docs/RELEASING.md.
 - v0.21.1 (2026-11-19): Settings, Radio, all choice rows match new look (plain rows, one heading style, choices as underlined words). Owner installed over USB; owner feed at 0.21.1; testers/everyone still 0.20.0 until owner sends it. Playlist action buttons still outlined boxes. Test for "update logged me out" report: same-key updates keep sign-in; 0.13.0 and older debug-signed, must uninstall once.
 - v0.22.0 (2026-11-20): seven styles (Studio default, Nothing, Airy, Shelf, Night, Mono, Glass), each dark or light (hold style in Settings > Appearance), per-person changes inside a style, song-colour grounds as gradients (D64). Stream quality now under "Playing from". Owner installed over USB; owner feed at 0.22.0; testers/everyone unchanged.

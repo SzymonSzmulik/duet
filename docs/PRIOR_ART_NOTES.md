@@ -7,7 +7,7 @@ Both repos cloned (shallow) into `~/prior-art/` on 2026-11-16:
 | Myspoti (now renamed **Orpheon**), https://github.com/kota-zo/myspoti | `70f323c` (2026-11-12) | ~150k lines Kotlin, 15 Gradle modules | GPL-3.0 |
 | SpatialFlow, https://github.com/MythicalSHUB/SpatialFlow | `ab6336c` (2026-10-29) | ~38k lines Kotlin, 1 module (`:app`) | Apache-2.0 (+ NOTICE asking for attribution) |
 
-License decision for tonight (from CLAUDE.md "Unattended mode"): **Myspoti option (b)**: study and re-implement, copy no Myspoti code. SpatialFlow code may be copied with Apache-2.0 attribution. So far nothing has been copied verbatim from either repo; see `docs/THIRD_PARTY.md`.
+License decision for tonight (from the project brief "Unattended mode"): **Myspoti option (b)**: study and re-implement, copy no Myspoti code. SpatialFlow code may be copied with Apache-2.0 attribution. So far nothing has been copied verbatim from either repo; see `docs/THIRD_PARTY.md`.
 
 Coverage note: Myspoti is far too large to read line by line in one night. I read the module layout, the README, the `:api` interfaces, the `:api-ytmusic` module, the extension manifest, and located (but did not study) the Spotify host and ad-block code. SpatialFlow: the `data/innertube` package, the NewPipe wrapper, and the outline of the playback service. Sections below say which.
 

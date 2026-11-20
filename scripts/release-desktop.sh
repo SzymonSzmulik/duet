@@ -21,6 +21,11 @@ done
 gh release create "$TAG" "${FILES[@]}" --repo "$REPO" --title "Duet $VERSION for computers" --notes "$NOTES" \
   || gh release upload "$TAG" "${FILES[@]}" --repo "$REPO" --clobber
 
+# The same files on the main repo's Releases page, where people look first. Best effort: the feeds above are what updates use.
+MIRROR="${DUET_MIRROR_REPO:-SzymonSzmulik/duet}"
+gh release create "$TAG" "${FILES[@]}" --repo "$MIRROR" --title "Duet $VERSION for computers" --notes "$NOTES" \
+  || gh release upload "$TAG" "${FILES[@]}" --repo "$MIRROR" --clobber || echo "Could not mirror to $MIRROR"
+
 feed() {  # platform, file
   local json sha
   json=$(python3 -c 'import json,sys; print(json.dumps({"versionCode": int(sys.argv[1]), "versionName": sys.argv[2], "apkUrl": sys.argv[3], "notes": sys.argv[4]}))' \

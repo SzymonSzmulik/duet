@@ -49,6 +49,6 @@ exit /b 0
 
 :fail
 echo.
-echo The build failed. Scroll up for the reason, and send it to Claude.
+echo The build failed. Scroll up for the reason, and report it as an issue on GitHub.
 pause
 exit /b 1

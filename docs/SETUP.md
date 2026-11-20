@@ -1,6 +1,6 @@
-# Setup: what to install (Claude Code can do this itself)
+# Setup: what to install
 
-The owner is asleep or away. **Install everything below that is missing, yourself, without asking**, using the commands here. Check first, install only what's absent, and log what you did in `docs/SETUP_LOG.md`. The owner's machine is a Mac (macOS, zsh). `brew install` is pre-approved in `.claude/settings.json`; `sudo` is denied, so if a step needs a password, skip it, record it in SETUP_LOG.md under "needs owner", and continue with whatever else you can do.
+Install everything below that is missing, using the commands here. Check first, install only what's absent. The reference machine is a Mac (macOS, zsh); `brew install` is the usual way.
 
 ## 0. Homebrew (the owner installs this once, before sleeping, if missing)
 Check: `brew --version`. If missing, you cannot install it (it needs the owner's password). Stop installing, write the exact line below in SETUP_LOG.md, and do all work that needs no installs (reading both reference repos, writing PRIOR_ART_NOTES.md).
