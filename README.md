@@ -92,9 +92,11 @@ Duet is not made by, or endorsed by, Spotify or YouTube. YouTube Music is reache
 
 Duet is an independent hobby project. It is not made, endorsed or sponsored by Spotify, Google or YouTube, and those names belong to their owners.
 
-- **Duet does not provide music.** It is a player. You sign in with your own Spotify and YouTube Music accounts, and you need the rights to what you play (for Spotify, an account in good standing). It contains no music, and no list of pirated music.
-- **Do not use it to pirate.** Do not use Duet to copy, share, resell or distribute copyrighted music, or to get around a paywall or a licence you do not have. Songs you save for offline use are for your own private listening on your own devices.
-- **It uses unofficial access.** The Spotify and YouTube Music parts talk to those services in ways they do not officially support, and some features (such as skipping ads) may go against their terms of service. Using Duet may get an account limited or closed. You use it at your own risk and are responsible for following the terms of the services and the laws where you live.
+**We do not condone piracy.** Please support the artists you listen to. Duet is not built for, and must not be used for, copying, sharing, reselling or distributing copyrighted music, or for getting around a paywall, licence or any other protection.
+
+- **Duet does not provide music.** It is only a player. You sign in with your own Spotify and YouTube Music accounts and you need the rights to what you play. It contains no music and no list of pirated music.
+- **Offline songs are for you.** Songs saved for offline use are for your own private listening on your own devices.
+- **Unofficial access.** The Spotify and YouTube Music parts talk to those services in ways they do not officially support, which may go against their terms of service. Using Duet may get an account limited or closed. You use it at your own risk and you are responsible for following those terms and the laws where you live.
 - **Radio stations** come from a public directory. Their streams belong to the stations.
 - **No warranty.** Duet is free software under the GNU GPL v3 (see `LICENSE`) and comes with no warranty. The authors are not liable for what you do with it.
 - **Rights holders:** if you think something in this repository infringes your rights, open an issue and it will be looked at.
