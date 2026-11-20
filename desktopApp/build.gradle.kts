@@ -96,7 +96,7 @@ val nowPlayingHelper = tasks.register<Exec>("buildNowPlayingHelper") {
 }
 tasks.matching { it.name == "prepareAppResources" }.configureEach { dependsOn(nowPlayingHelper) }
 
-val desktopVersion = "1.0.4"
+val desktopVersion = "1.0.5"
 
 compose.desktop {
     application {
