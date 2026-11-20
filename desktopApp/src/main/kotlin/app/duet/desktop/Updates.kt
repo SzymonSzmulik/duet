@@ -17,7 +17,7 @@ import kotlin.system.exitProcess
  */
 object Updates {
     /** The build's number as the feed compares it: 1.0.0 is 10000, 1.2.3 is 10203 (the installer version, `desktopVersion`). */
-    const val VERSION_CODE = 10005
+    const val VERSION_CODE = 10006
 
     /** Which download this computer takes: `mac-arm64`, `mac-x64` or `windows` (anything else gets no updates). */
     val platform: String? = System.getProperty("os.name").lowercase().let { os ->
